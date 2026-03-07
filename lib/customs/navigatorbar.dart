@@ -12,7 +12,7 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return  SafeArea( child : Container(
       height: 80,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -83,7 +83,7 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ),);
   }
 
   Widget _buildNavItem({

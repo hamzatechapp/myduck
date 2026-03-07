@@ -41,36 +41,51 @@ class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMix
 
       final XFile? photo = await _picker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 85,
+        imageQuality: 40, // Quality ko 85 se 40 kar diya (Size chota ho jayega)
+        maxWidth: 1000,   // Width ko limit kar diya taake file heavy na ho
       );
 
       print('📸 Photo result: ${photo?.path}');
 
       if (photo != null && mounted) {
         final File imageFile = File(photo.path);
-        print('📁 File exists: ${await imageFile.exists()}');
 
-        if (await imageFile.exists()) {
-          print('✅ Navigating to CustomizeScreen...');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomizeScreen(imageFile: imageFile),
-            ),
-          );
-        } else {
-          _showError('Failed to capture photo');
-        }
-      } else {
-        print('❌ Photo is null - user cancelled');
+        // Navigation logic...
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CustomizeScreen(imageFile: imageFile),
+          ),
+        );
       }
     } catch (e) {
-      print('❌ Camera error: $e');
       _showError('Camera error: $e');
     }
   }
 
   Future<void> _pickImageFromGallery() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 40, // Same optimization gallery ke liye bhi
+        maxWidth: 1000,
+      );
+
+      if (image != null && mounted) {
+        final File imageFile = File(image.path);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CustomizeScreen(imageFile: imageFile),
+          ),
+        );
+      }
+    } catch (e) {
+      _showError('Gallery error: $e');
+    }
+  }
+
+  Future<void> _pickImageFromGallerys() async {
     try {
       print('🖼️ Opening gallery...');
 

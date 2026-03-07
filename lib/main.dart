@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:myduck/homepage.dart';
-import 'package:myduck/mianscreen.dart';
-import 'package:myduck/particescreen.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
+import 'views/main_screen.dart';
+import 'viewmodels/customize_viewmodel.dart';
+import 'viewmodels/processing_viewmodel.dart';
+import 'viewmodels/product_viewmodel.dart';
+import 'viewmodels/upload_viewmodel.dart';
 
-void main()  {
-
+void main() {
   runApp(const TubbzApp());
 }
 
@@ -14,15 +15,23 @@ class TubbzApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'TUBBZ Yourself',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.amber,
-        fontFamily: 'Poppins',
-        scaffoldBackgroundColor: const Color(0xFFFFF9E6),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CustomizeViewModel()),
+        ChangeNotifierProvider(create: (_) => ProcessingViewModel()),
+        ChangeNotifierProvider(create: (_) => ProductViewModel()),
+        ChangeNotifierProvider(create: (_) => UploadViewModel()),
+      ],
+      child: MaterialApp(
+        title: 'TUBBZ Yourself',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.amber,
+          fontFamily: 'Poppins',
+          scaffoldBackgroundColor: const Color(0xFFFFF9E6),
+        ),
+        home: const MainScreen(),
       ),
-      home: MainScreen(),
     );
   }
 }

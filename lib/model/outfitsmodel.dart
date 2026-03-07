@@ -7,8 +7,7 @@ class Outfitsmodel {
   num? _v;
 
   // Base URL for images
-  static const String baseUrl = 'http://192.168.100.194:3001';
-
+  static const String baseUrl = 'https://tubbzyourself.techons.co.uk';
   Outfitsmodel({
     String? id,
     String? name,
