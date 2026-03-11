@@ -1,16 +1,21 @@
-# myduck
+TubbzYourself - 3D Avatar Customizer
+A high-performance Flutter application built with MVVM Architecture that allows users to create and customize 3D avatars with real-time asset generation.
+ Key Features
+3D Customization: Interactive 3D model viewing and customization using .glb assets.
 
-A new Flutter project.
+AI Image Generation: Seamless integration with backend APIs for generating personalized assets from user photos.
 
-## Getting Started
+Secure Authentication: End-to-end Email OTP verification system.
 
-This project is a starting point for a Flutter application.
+Advanced Media Handling: Custom camera and gallery modules for high-quality image uploads.
 
-A few resources to get you started if this is your first Flutter project:
+Modern UI/UX: Smooth transitions and staggered animations using AnimateDo.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+ Technical Stack
+Architecture: MVVM (Model-View-ViewModel)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+State Management: Provider
+
+Networking: RESTful APIs ( Http) with Multipart requests
+
+Asset Management: 3D Model Viewer, Image Picker
