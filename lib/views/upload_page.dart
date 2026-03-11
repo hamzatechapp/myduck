@@ -1,18 +1,31 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:myduck/customizationscreen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../viewmodels/upload_viewmodel.dart';
+import 'customize_screen.dart';
 
-class UploadScreen extends StatefulWidget {
+class UploadScreen extends StatelessWidget {
   const UploadScreen({Key? key}) : super(key: key);
 
   @override
-  State<UploadScreen> createState() => _UploadScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => UploadViewModel(),
+      child: const _UploadScreenContent(),
+    );
+  }
 }
 
-class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMixin {
-  final ImagePicker _picker = ImagePicker();
+class _UploadScreenContent extends StatefulWidget {
+  const _UploadScreenContent();
+
+  @override
+  State<_UploadScreenContent> createState() => _UploadScreenContentState();
+}
+
+class _UploadScreenContentState extends State<_UploadScreenContent>
+    with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
@@ -35,88 +48,14 @@ class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMix
     super.dispose();
   }
 
-  Future<void> _pickImageFromCamera() async {
-    try {
-      print('📸 Opening camera...');
-
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 40, // Quality ko 85 se 40 kar diya (Size chota ho jayega)
-        maxWidth: 1000,   // Width ko limit kar diya taake file heavy na ho
+  Future<void> _handleImagePicked(File? imageFile) async {
+    if (imageFile != null && mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CustomizeScreen(imageFile: imageFile),
+        ),
       );
-
-      print('📸 Photo result: ${photo?.path}');
-
-      if (photo != null && mounted) {
-        final File imageFile = File(photo.path);
-
-        // Navigation logic...
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CustomizeScreen(imageFile: imageFile),
-          ),
-        );
-      }
-    } catch (e) {
-      _showError('Camera error: $e');
-    }
-  }
-
-  Future<void> _pickImageFromGallery() async {
-    try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 40, // Same optimization gallery ke liye bhi
-        maxWidth: 1000,
-      );
-
-      if (image != null && mounted) {
-        final File imageFile = File(image.path);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CustomizeScreen(imageFile: imageFile),
-          ),
-        );
-      }
-    } catch (e) {
-      _showError('Gallery error: $e');
-    }
-  }
-
-  Future<void> _pickImageFromGallerys() async {
-    try {
-      print('🖼️ Opening gallery...');
-
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 85,
-      );
-
-      print('🖼️ Image result: ${image?.path}');
-
-      if (image != null && mounted) {
-        final File imageFile = File(image.path);
-        print('📁 File exists: ${await imageFile.exists()}');
-
-        if (await imageFile.exists()) {
-          print('✅ Navigating to CustomizeScreen...');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomizeScreen(imageFile: imageFile),
-            ),
-          );
-        } else {
-          _showError('Failed to load image');
-        }
-      } else {
-        print('❌ Image is null - user cancelled');
-      }
-    } catch (e) {
-      print('❌ Gallery error: $e');
-      _showError('Gallery error: $e');
     }
   }
 
@@ -124,10 +63,15 @@ class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMix
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          content: Text(
+            message,
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          ),
           backgroundColor: const Color(0xFFEF4444),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }
@@ -135,6 +79,14 @@ class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<UploadViewModel>();
+
+    if (viewModel.errorMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showError(viewModel.errorMessage!);
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -174,7 +126,11 @@ class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMix
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Icon(Icons.image, size: 80, color: Colors.grey),
+                        child: const Icon(
+                          Icons.image,
+                          size: 80,
+                          color: Colors.grey,
+                        ),
                       );
                     },
                   ),
@@ -202,9 +158,10 @@ class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMix
                     label: 'Take a Photo',
                     icon: Icons.camera_alt,
                     color: const Color(0xFF0D6EFD),
-                    onTap: () {
-                      print('🔘 Camera button tapped!');
-                      _pickImageFromCamera();
+                    isLoading: viewModel.isProcessing,
+                    onTap: () async {
+                      final imageFile = await viewModel.pickImageFromCamera();
+                      _handleImagePicked(imageFile);
                     },
                   ),
                   const SizedBox(height: 16),
@@ -212,9 +169,10 @@ class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMix
                     label: 'Choose from Gallery',
                     icon: Icons.photo_library,
                     color: const Color(0xFFFFC107),
-                    onTap: () {
-                      print('🔘 Gallery button tapped!');
-                      _pickImageFromGallery();
+                    isLoading: viewModel.isProcessing,
+                    onTap: () async {
+                      final imageFile = await viewModel.pickImageFromGallery();
+                      _handleImagePicked(imageFile);
                     },
                   ),
                   const SizedBox(height: 40),
@@ -232,15 +190,23 @@ class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMix
     required IconData icon,
     required Color color,
     required VoidCallback onTap,
+    bool isLoading = false,
   }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap,
+        onTap: isLoading ? null : onTap,
         borderRadius: BorderRadius.circular(16),
         child: Ink(
           decoration: BoxDecoration(
-            color: color,
+            gradient: const LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color(0xFFFFE204),
+                Color(0xFFFFB800),
+              ],
+            ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -251,17 +217,13 @@ class _UploadScreenState extends State<UploadScreen> with TickerProviderStateMix
             ],
           ),
           child: Container(
-            decoration: BoxDecoration(    gradient: const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color(0xFFFFE204),
-                Color(0xFFFFB800),
-              ],
-            ),),
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 18),
-            child: Row(
+            child: isLoading
+                ? const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            )
+                : Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(icon, size: 24, color: Colors.white),

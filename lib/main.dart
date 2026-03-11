@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'views/main_screen.dart';
 import 'viewmodels/customize_viewmodel.dart';
 import 'viewmodels/processing_viewmodel.dart';
-import 'viewmodels/product_viewmodel.dart';
 import 'viewmodels/upload_viewmodel.dart';
 
 void main() {
@@ -19,7 +18,6 @@ class TubbzApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => CustomizeViewModel()),
         ChangeNotifierProvider(create: (_) => ProcessingViewModel()),
-        ChangeNotifierProvider(create: (_) => ProductViewModel()),
         ChangeNotifierProvider(create: (_) => UploadViewModel()),
       ],
       child: MaterialApp(

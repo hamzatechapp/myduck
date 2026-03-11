@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:myduck/bijemojicustom.dart';
-import 'package:myduck/uploadpage.dart';
+import 'package:myduck/views/bitemji_custom_screen.dart';
+import 'upload_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -26,7 +25,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   int _currentCarouselIndex = 0;
   double _scrollOffset = 0.0;
 
-  // Aapki batayi hui 4 Premium Images
   final List<Map<String, dynamic>> _tubbzExamples = [
     {
       'id': 1,
@@ -61,17 +59,42 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark));
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ));
 
-    _scrollController = ScrollController()..addListener(() => setState(() => _scrollOffset = _scrollController.offset));
-    _duckController = AnimationController(duration: const Duration(milliseconds: 1200), vsync: this);
-    _floatController = AnimationController(duration: const Duration(milliseconds: 4000), vsync: this)..repeat(reverse: true);
-    _fadeController = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this);
+    _scrollController = ScrollController()
+      ..addListener(() => setState(() => _scrollOffset = _scrollController.offset));
+
+    _duckController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    _floatController = AnimationController(
+      duration: const Duration(milliseconds: 4000),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
     _carouselController = PageController(viewportFraction: 0.85);
 
-    _duckScale = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _duckController, curve: Curves.easeOutBack));
-    _floatAnimation = Tween<double>(begin: -8, end: 8).animate(CurvedAnimation(parent: _floatController, curve: Curves.easeInOut));
-    _duckRotation = Tween<double>(begin: -0.02, end: 0.02).animate(CurvedAnimation(parent: _floatController, curve: Curves.easeInOut));
+    _duckScale = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _duckController, curve: Curves.easeOutBack),
+    );
+
+    _floatAnimation = Tween<double>(begin: -8, end: 8).animate(
+      CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
+    );
+
+    _duckRotation = Tween<double>(begin: -0.02, end: 0.02).animate(
+      CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
+    );
 
     _duckController.forward();
     _fadeController.forward();
@@ -82,7 +105,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     Future.delayed(const Duration(seconds: 4), () {
       if (mounted && _carouselController.hasClients) {
         int nextIndex = (_currentCarouselIndex + 1) % _tubbzExamples.length;
-        _carouselController.animateToPage(nextIndex, duration: const Duration(milliseconds: 800), curve: Curves.easeInOutCubic).then((_) => _startAutoScroll());
+        _carouselController
+            .animateToPage(
+          nextIndex,
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.easeInOutCubic,
+        )
+            .then((_) => _startAutoScroll());
       }
     });
   }
@@ -109,7 +138,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           duration: const Duration(milliseconds: 250),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFBF5).withOpacity(appBarOpacity),
-            border: appBarOpacity > 0.3 ? Border(bottom: BorderSide(color: const Color(0xFFE5E5E5).withOpacity(appBarOpacity), width: 1)) : null,
+            border: appBarOpacity > 0.3
+                ? Border(
+                bottom: BorderSide(
+                  color: const Color(0xFFE5E5E5).withOpacity(appBarOpacity),
+                  width: 1,
+                ))
+                : null,
           ),
           child: SafeArea(
             child: Padding(
@@ -117,7 +152,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('TUBBZ YOURSELF', style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))),
+                  Text(
+                    'TUBBZ YOURSELF',
+                    style: GoogleFonts.inter(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0F172A),
+                    ),
+                  ),
                   const Icon(Icons.grid_view_rounded, color: Color(0xFF0F172A)),
                 ],
               ),
@@ -135,7 +177,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             const SizedBox(height: 48),
             _buildMainButton(context),
             const SizedBox(height: 16),
-            _buildBitemjiButton(context), // White with Yellow Border
+            _buildBitemjiButton(context),
             const SizedBox(height: 64),
             _buildCarouselSection(),
             const SizedBox(height: 100),
@@ -156,37 +198,73 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               offset: Offset(0, _floatAnimation.value),
               child: Transform.rotate(
                 angle: _duckRotation.value,
-                child: Image.asset('assets/images/onlyduck.png', width: 180, height: 180, fit: BoxFit.contain),
+                child: Image.asset(
+                  'assets/images/onlyduck.png',
+                  width: 180,
+                  height: 180,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 32),
-          Text('Create Your', style: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.w600, color: const Color(0xFF475569))),
-          Text('Perfect TUBBZ', style: GoogleFonts.inter(fontSize: 40, fontWeight: FontWeight.w900, color: const Color(0xFFFFA500))),
+          Text(
+            'Create Your',
+            style: GoogleFonts.inter(
+              fontSize: 32,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF475569),
+            ),
+          ),
+          Text(
+            'Perfect TUBBZ',
+            style: GoogleFonts.inter(
+              fontSize: 40,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFFFFA500),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // Pehla Button: Solid Yellow
   Widget _buildMainButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: GestureDetector(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UploadScreen())),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const UploadScreen()),
+        ),
         child: Container(
           height: 60,
           width: double.infinity,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFFFFD700), Color(0xFFFFA500)]),
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+            ),
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(color: Colors.orange.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.orange.withOpacity(0.3),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              )
+            ],
           ),
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Create Your TUBBZ', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(
+                  'Create Your TUBBZ',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 20),
               ],
@@ -197,26 +275,43 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  // Dusra Button: White with Yellow Border
   Widget _buildBitemjiButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: GestureDetector(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BitemjiCustomScreen())),
+        onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => BitemjiCustomScreen()),
+        );
+
+
+
+        },
         child: Container(
           height: 60,
           width: double.infinity,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFFFA500), width: 2), // Yellow Border
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5))],
+            border: Border.all(color: const Color(0xFFFFA500), width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              )
+            ],
           ),
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Customize Bitemji', style: GoogleFonts.inter(color: const Color(0xFFFFA500), fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(
+                  'Customize Bitemji',
+                  style: GoogleFonts.inter(
+                    color: const Color(0xFFFFA500),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 const Icon(Icons.face_rounded, color: Color(0xFFFFA500), size: 20),
               ],
@@ -230,7 +325,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _buildCarouselSection() {
     return Column(
       children: [
-        Text('Premium Collections', style: GoogleFonts.inter(fontSize: 26, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))),
+        Text(
+          'Premium Collections',
+          style: GoogleFonts.inter(
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF0F172A),
+          ),
+        ),
         const SizedBox(height: 32),
         SizedBox(
           height: 360,
@@ -265,7 +367,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         color: tubbz['color'],
         borderRadius: BorderRadius.circular(28),
-        boxShadow: [BoxShadow(color: tubbz['color'].withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 10))],
+        boxShadow: [
+          BoxShadow(
+            color: tubbz['color'].withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 10),
+          )
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -279,14 +387,34 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   tubbz['image'],
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  loadingBuilder: (context, child, progress) => progress == null ? child : const Center(child: CircularProgressIndicator(color: Colors.white)),
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.white, size: 50),
+                  loadingBuilder: (context, child, progress) =>
+                  progress == null
+                      ? child
+                      : const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  ),
+                  errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.broken_image, color: Colors.white, size: 50),
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            Text(tubbz['name'], style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w800, color: Colors.white)),
-            Text(tubbz['description'], style: GoogleFonts.inter(fontSize: 14, color: Colors.white.withOpacity(0.8), fontWeight: FontWeight.w500)),
+            Text(
+              tubbz['name'],
+              style: GoogleFonts.inter(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              tubbz['description'],
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                color: Colors.white.withOpacity(0.8),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),

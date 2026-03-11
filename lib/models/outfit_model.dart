@@ -6,8 +6,8 @@ class Outfitsmodel {
   String? _updatedAt;
   num? _v;
 
-  // Base URL for images
   static const String baseUrl = 'https://tubbzyourself.techons.co.uk';
+
   Outfitsmodel({
     String? id,
     String? name,
@@ -28,7 +28,6 @@ class Outfitsmodel {
     _id = json['_id'];
     _name = json['name'];
 
-    // URL Correction Logic
     String? path = json['imageUrl'];
     if (path != null && path.startsWith('/')) {
       _imageUrl = baseUrl + path;
