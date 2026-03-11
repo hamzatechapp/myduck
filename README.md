@@ -3,9 +3,7 @@ A high-performance Flutter application built with MVVM Architecture that allows 
  Key Features
 3D Customization: Interactive 3D model viewing and customization using .glb assets.
 
-AI Image Generation: Seamless integration with backend APIs for generating personalized assets from user photos.
-
-Secure Authentication: End-to-end Email OTP verification system.
+AI Image Generation: Seamless integration with backend APIs for generating personalized assets from user photo
 
 Advanced Media Handling: Custom camera and gallery modules for high-quality image uploads.
 
